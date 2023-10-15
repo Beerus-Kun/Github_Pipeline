@@ -9,7 +9,7 @@
 - Save some organizations that would provide information 
 
 <p align="center">
-  <img src="dynamodb.png" width="350"/>
+  <img src="images/dynamodb.png" width="350"/>
 </p>
 
 
@@ -22,14 +22,14 @@
 **Step Function**
 
 <p align="center">
-  <img src="stepfunctions_graph.png" width="350"/>
+  <img src="images/stepfunctions_graph.png" width="350"/>
 </p>
 
 
 **S3**
 
 <p align="center">
-  <img src="s3.png" width="350"/>
+  <img src="images/s3.png" width="350"/>
 </p>
 
 
