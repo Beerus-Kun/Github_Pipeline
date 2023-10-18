@@ -7,6 +7,7 @@ BUCKET="github-datalake"
 DYNAMODB_TABLE = "github"
 DYNAMODB_ITEM = "AWS_stepfunction"
 PARQUET_EXTENSION = ".parquet"
+S3_FOLDER = "github"
 
 ORGANIZATION_QUERY ="""
 query {
@@ -49,7 +50,11 @@ query {
     node(id: "__repository_id__") {
     ...on Repository{
       languages(first: 20, __cursor__){
-        totalCount
+        nodes{
+          name
+          id
+          color
+        }
         pageInfo {
           hasNextPage
           endCursor
@@ -65,6 +70,10 @@ query {
     node(id: "__repository_id__") {
     ...on Repository{
         pullRequests(first: 5, __cursor__){
+          pageInfo{
+            endCursor
+            hasNextPage
+          }
           nodes{
             body
             createdAt
@@ -78,33 +87,46 @@ query {
 }
 """
 
+BRANCH_QUERY ="""
+query {
+  node(id: "__repository_id__") {
+    ... on Repository {
+      refs(refPrefix: "refs/heads/", first: 1, __branch_cursor__) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          name
+          id
+        }
+      }
+    }
+  }
+}
+"""
+
 COMMIT_QUERY = """
 query {
-    node(id: "__repository_id__") {
-    ...on Repository{
-    refs(refPrefix: "refs/heads/", first: 1, __branch_cursor__) {
-      totalCount
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      nodes {
-        name
-        id
-        target {
-          ... on Commit {
-            history(first: 10, __commit_cursor__) {
-              pageInfo {
-                hasNextPage
-                endCursor
-              }
-              nodes {
-                author {
-                  name
+  node(id: "__repository_id__") {
+    ... on Repository {
+      refs(refPrefix: "refs/heads/", first: 1, __branch_cursor__) {
+        nodes {
+          target {
+            ... on Commit {
+              history(first: 10, __commit_cursor__) {
+                pageInfo {
+                  hasNextPage
+                  endCursor
                 }
-                message
-                committedDate
-                id
+                nodes {
+                  author {
+                    name
+                  }
+                  message
+                  committedDate
+                  id
+                }
               }
             }
           }

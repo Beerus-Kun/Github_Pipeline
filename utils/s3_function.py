@@ -1,5 +1,5 @@
 import boto3, json
-import constant
+from utils import constant
 
 s3_client = boto3.client('s3')
 s3_resource = boto3.resource('s3')
@@ -35,4 +35,5 @@ def delete_file(folder_link):
     bucket.object_versions.filter(Prefix=folder_link).delete()
 
 def save_parquet_to_s3(file_path:str, file:dict):
+    file_path = file_path + constant.PARQUET_EXTENSION
     pass

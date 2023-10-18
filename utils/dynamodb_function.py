@@ -1,5 +1,5 @@
 import boto3, json
-import constant
+from utils import constant
 
 # conect to dynamodb
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')

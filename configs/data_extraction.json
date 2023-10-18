@@ -36,10 +36,19 @@
         }
     },
     {
-        "object": "commit",
+        "object": "branch",
         "config": {
             "type": "hierarchy_snapshot",
             "parent": "repository",
+            "interval": 5,
+            "key": "id"
+        }
+    },
+    {
+        "object": "commit",
+        "config": {
+            "type": "hierarchy_snapshot",
+            "parent": "branch",
             "interval": 5,
             "key": "id"
         }
