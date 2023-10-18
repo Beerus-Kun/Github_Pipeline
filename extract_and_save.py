@@ -61,7 +61,12 @@ def extract(event:dict):
 
             if parent_info['repository_cursor'] == '':
                 file_organization_path = file_path + f'{parent_info["organization_id"]}'
-                s3_function.save_parquet_to_s3(file_organization_path, data)
+                try:
+                    s3_function.save_parquet_to_s3(file_organization_path, data)
+                except Exception as e:
+                    print(e)
+                    print("has a error when save to s3")
+                    result['extra']['has_err'] = True
         else:
             result['extra']['has_err'] = True
             print("out of organization data")
@@ -72,12 +77,19 @@ def extract(event:dict):
         if has_data == True:
             file_repository_path = file_path + f'{data["pageInfo"]["endCursor"]}'
 
+            parent_ids ={}
+            parent_ids['organization_id'] = result['ancient']['organization_id']
             result['ancient']['repository_cursor'] = data["pageInfo"]["endCursor"]
             result['extra']['has_next'] = data["pageInfo"]["hasNextPage"]
             result['children'] = data['nodes']
 
-            s3_function.save_parquet_to_s3(file_repository_path, data['nodes'])
-            dynamodb_function.update_cursor(result['ancient']['organization'], data["pageInfo"]["endCursor"])
+            try:
+                s3_function.save_parquet_to_s3(file_repository_path, data['nodes'], parent_ids)
+                dynamodb_function.update_cursor(result['ancient']['organization'], data["pageInfo"]["endCursor"])
+            except Exception as e:
+                print(e)
+                print("has a error when save to s3")
+                result['extra']['has_err'] = True
         else:
             result['extra']['has_err'] = True
             print(f"out of repository in {parent_info['organization']} organization data")
@@ -92,11 +104,19 @@ def extract(event:dict):
         if has_data == True:
             file_repository_path = file_path + f'{data["pageInfo"]["endCursor"]}'
 
+            parent_ids ={}
+            parent_ids['repository_id'] = event['parent']['id']
+
             result['ancient']['pull_request_cusor'] = data["pageInfo"]["endCursor"]
             result['extra']['has_next'] = data["pageInfo"]["hasNextPage"]
             result['children'] = data['nodes']
 
-            s3_function.save_parquet_to_s3(file_repository_path, data['nodes'])
+            try:
+                s3_function.save_parquet_to_s3(file_repository_path, data['nodes'], parent_ids)
+            except Exception as e:
+                print(e)
+                print("has a error when save to s3")
+                result['extra']['has_err'] = True
         else:
             result['extra']['has_err'] = True
             print(f"out of pull requests in {parent_info['repository']} repository data")
@@ -111,11 +131,19 @@ def extract(event:dict):
         if has_data == True:
             file_repository_path = file_path + f'{data["pageInfo"]["endCursor"]}'
 
+            parent_ids ={}
+            parent_ids['repository_id'] = event['parent']['id']
+
             result['ancient']['language_cusor'] = data["pageInfo"]["endCursor"]
             result['extra']['has_next'] = data["pageInfo"]["hasNextPage"]
             result['children'] = data['nodes']
 
-            s3_function.save_parquet_to_s3(file_repository_path, data['nodes'])
+            try:
+                s3_function.save_parquet_to_s3(file_repository_path, data['nodes'], parent_ids)
+            except Exception as e:
+                print(e)
+                print("has a error when save to s3")
+                result['extra']['has_err'] = True
         else:
             result['extra']['has_err'] = True
             print(f"out of language in {parent_info['repository']} repository data")
@@ -130,11 +158,20 @@ def extract(event:dict):
         if has_data == True:
             file_repository_path = file_path + f'{data["pageInfo"]["endCursor"]}'
 
+            parent_ids ={}
+            parent_ids['repository_id'] = event['parent']['id']
+
             result['ancient']['branch_cursor'] = data["pageInfo"]["endCursor"]
             result['extra']['has_next'] = data["pageInfo"]["hasNextPage"]
             result['children'] = data['nodes']
 
-            s3_function.save_parquet_to_s3(file_repository_path, data['nodes'])
+            try:
+                s3_function.save_parquet_to_s3(file_repository_path, data['nodes'], parent_ids)
+            except Exception as e:
+                print(e)
+                print("has a error when save to s3")
+                result['extra']['has_err'] = True
+
         else:
             result['extra']['has_err'] = True
             print(f"out of branch in {parent_info['repository']} repository data")
@@ -150,11 +187,19 @@ def extract(event:dict):
         if has_data == True:
             file_repository_path = file_path + f'{data["pageInfo"]["endCursor"]}'
 
+            parent_ids ={}
+            parent_ids['branch_id'] = event['parent']['id']
+
             result['ancient']['commit_cursor'] = data["pageInfo"]["endCursor"]
             result['extra']['has_next'] = data["pageInfo"]["hasNextPage"]
             result['children'] = data['nodes']
 
-            s3_function.save_parquet_to_s3(file_repository_path, data['nodes'])
+            try:
+                s3_function.save_parquet_to_s3(file_repository_path, data['nodes'], parent_ids)
+            except Exception as e:
+                print(e)
+                print("has a error when save to s3")
+                result['extra']['has_err'] = True
         else:
             result['extra']['has_err'] = True
             print(f"out of branch in {parent_info['repository']} repository data")

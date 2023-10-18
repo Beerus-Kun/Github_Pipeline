@@ -1,4 +1,5 @@
-import boto3, json
+import boto3, json, io
+import pandas as pd
 from utils import constant
 
 s3_client = boto3.client('s3')
@@ -34,6 +35,14 @@ def delete_file(folder_link):
     bucket = s3_resource.Bucket(constant.BUCKET)
     bucket.object_versions.filter(Prefix=folder_link).delete()
 
-def save_parquet_to_s3(file_path:str, file:dict):
+def save_parquet_to_s3(file_path:str, data:dict, parents:dict = {}):
     file_path = file_path + constant.PARQUET_EXTENSION
-    pass
+    df = pd.DataFrame.from_dict(data)
+
+    for key, value in parents.items():
+        df[key] = value
+
+    out_buffer = io.BytesIO()
+    df.to_parquet(out_buffer, index=False)
+
+    s3_client.put_object(Bucket=constant.BUCKET, Key=file_path, Body=out_buffer.getvalue())
