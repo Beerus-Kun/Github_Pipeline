@@ -7,8 +7,6 @@ def datetime_to_path(input_time:str):
     hour, minute, second = time.split(':')
     return f'/year={year}/month={month}/day={day}/hour={hour}/minute={minute}/'
 
-# Chưa save id parent 
-
 """
 ['in']
     ['extract']
@@ -203,10 +201,15 @@ def extract(event:dict):
         else:
             result['extra']['has_err'] = True
             print(f"out of branch in {parent_info['repository']} repository data")
+    
+    return result
 
-if __name__ == "__main__":
-    # has_data, data = github_extraction.extract_repository("google")
-    print(github_extraction.extract_pull_request("MDEwOlJlcG9zaXRvcnkxOTM2Nzcx"))
-    pass
+def lambda_handler(event, context):
+    return extract(event)
+
+# if __name__ == "__main__":
+#     # has_data, data = github_extraction.extract_repository("google")
+#     print(github_extraction.extract_pull_request("MDEwOlJlcG9zaXRvcnkxOTM2Nzcx"))
+#     pass
     
     
