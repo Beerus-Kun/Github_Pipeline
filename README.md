@@ -4,7 +4,7 @@
 - Config of Step Function [file](step-function.json)
 
 <p align="center">
-  <img src="images/stepfunctions_graph.png" width="350"/>
+  <img src="images/stepfunctions_graph.png" width="800"/>
 </p>
 
 
@@ -12,7 +12,7 @@
 - Save some organizations that would provide information 
 
 <p align="center">
-  <img src="images/dynamodb.png" width="350"/>
+  <img src="images/dynamodb.png" width="800"/>
 </p>
 
 
@@ -70,19 +70,19 @@
 
 
 <p align="center">
-  <img src="images/objects.png" width="350"/>
+  <img src="images/objects.png" width="800"/>
 </p>
 
 <p align="center">
-  <img src="images/s3.png" width="350"/>
+  <img src="images/s3.png" width="800"/>
 </p>
 
 <p align="center">
-  <img src="images/s3_1.png" width="350"/>
+  <img src="images/s3_1.png" width="800"/>
 </p>
 
 <p align="center">
-  <img src="images/s3_2.png" width="350"/>
+  <img src="images/s3_2.png" width="800"/>
 </p>
 
 
