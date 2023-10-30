@@ -1,6 +1,6 @@
 import json
 from utils import constant
-import pip._vendor.requests as requests
+import requests
 
 url = constant.API_URL
 headers = constant.GITHUB_HEADER

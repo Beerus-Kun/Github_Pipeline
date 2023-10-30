@@ -1,4 +1,4 @@
-import boto3, json
+import boto3
 from utils import constant
 
 # conect to dynamodb
