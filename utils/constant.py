@@ -136,11 +136,3 @@ query {
   }
 }
 """
-
-QUERY ={
-    "organization": ORGANIZATION_QUERY,
-    "repository": REPOSITORY_QUERY,
-    "pullRequest": PULL_REQUEST_QUERY,
-    "language": LANGUAGE_QUERY,
-    "commit": COMMIT_QUERY
-}

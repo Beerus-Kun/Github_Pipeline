@@ -1,7 +1,6 @@
 import json
 from datetime import datetime, timedelta
-
-CONFIG_FILE = "data_extraction_config.json"
+from utils import constant
 
 def get_json_file(file_name):
     f = open(file_name)
@@ -22,7 +21,7 @@ def get_time_windows(minute_interval=5):
 
 def transform_file_model():
     # get configs from file
-    configs:list = get_json_file(CONFIG_FILE)
+    configs:list = get_json_file(constant.CONFIG_FILE)
 
     # transform file model
     position_dict = {}
@@ -61,22 +60,23 @@ def transform_file_model():
             parent_position = len(sub_result["children"])
             sub_result["children"].append(config)
 
-
             # save position
             new_parents = parents.copy()
             new_parents.append('children')
             new_parents.append(parent_position)
             position_dict[config["object"]] = new_parents
 
-        # have found the parent yet
+        # have not found the parent yet
         else:
             # save to the tail of list
             configs.append(config)
 
     return result
 
+def lambda_handler(event, context):
+    event['extract'] = transform_file_model()
+    return event
 
-
-if __name__ == "__main__":
-    with open("transformed_configurate.json", "w") as outfile:
-        json.dump(transform_file_model(), outfile)
+# if __name__ == "__main__":
+#     with open("transformed_configurate.json", "w") as outfile:
+#         json.dump(transform_file_model(), outfile)

@@ -1,0 +1,506 @@
+{
+    "Comment": "A description of my state machine",
+    "StartAt": "get_github_cursor",
+    "States": {
+      "get_github_cursor": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "Payload.$": "$",
+          "FunctionName": "arn:aws:lambda:us-east-1:013462464526:function:github_pipeline_extract_former_info:$LATEST"
+        },
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "Lambda.ServiceException",
+              "Lambda.AWSLambdaException",
+              "Lambda.SdkClientException",
+              "Lambda.TooManyRequestsException"
+            ],
+            "IntervalSeconds": 1,
+            "MaxAttempts": 3,
+            "BackoffRate": 2
+          }
+        ],
+        "Next": "Configuration"
+      },
+      "Configuration": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "Payload.$": "$",
+          "FunctionName": "arn:aws:lambda:us-east-1:013462464526:function:github_pipeline_transform_configuaration:$LATEST"
+        },
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "Lambda.ServiceException",
+              "Lambda.AWSLambdaException",
+              "Lambda.SdkClientException",
+              "Lambda.TooManyRequestsException"
+            ],
+            "IntervalSeconds": 1,
+            "MaxAttempts": 3,
+            "BackoffRate": 2
+          }
+        ],
+        "Next": "Layer 1: Map config"
+      },
+      "Layer 1: Map config": {
+        "Type": "Map",
+        "ItemProcessor": {
+          "ProcessorConfig": {
+            "Mode": "INLINE"
+          },
+          "StartAt": "Wait (1)",
+          "States": {
+            "Wait (1)": {
+              "Type": "Wait",
+              "Seconds": 5,
+              "Next": "Layer 1: Map github info"
+            },
+            "Layer 1: Map github info": {
+              "Type": "Map",
+              "ItemProcessor": {
+                "ProcessorConfig": {
+                  "Mode": "INLINE"
+                },
+                "StartAt": "Wait",
+                "States": {
+                  "Wait": {
+                    "Type": "Wait",
+                    "Seconds": 5,
+                    "Next": "Layer 1: Extract and Save"
+                  },
+                  "Layer 1: Extract and Save": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::lambda:invoke",
+                    "OutputPath": "$.Payload",
+                    "Parameters": {
+                      "Payload.$": "$",
+                      "FunctionName": "arn:aws:lambda:us-east-1:013462464526:function:github_pipeline_extract_and_save:$LATEST"
+                    },
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException",
+                          "Lambda.TooManyRequestsException"
+                        ],
+                        "IntervalSeconds": 1,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2
+                      }
+                    ],
+                    "Next": "Layer 1: Check error"
+                  },
+                  "Layer 1: Check error": {
+                    "Type": "Choice",
+                    "Choices": [
+                      {
+                        "Or": [
+                          {
+                            "Variable": "$.extra.has_err",
+                            "BooleanEquals": true
+                          },
+                          {
+                            "Variable": "$.extra.children_num",
+                            "NumericEquals": 0
+                          }
+                        ],
+                        "Next": "Layer 1: Pass"
+                      }
+                    ],
+                    "Default": "Layer 2: Map config"
+                  },
+                  "Layer 2: Map config": {
+                    "Type": "Map",
+                    "ItemProcessor": {
+                      "ProcessorConfig": {
+                        "Mode": "INLINE"
+                      },
+                      "StartAt": "Wait (2)",
+                      "States": {
+                        "Wait (2)": {
+                          "Type": "Wait",
+                          "Seconds": 5,
+                          "Next": "Layer 2: Map parent"
+                        },
+                        "Layer 2: Map parent": {
+                          "Type": "Map",
+                          "ItemProcessor": {
+                            "ProcessorConfig": {
+                              "Mode": "INLINE"
+                            },
+                            "StartAt": "Wait (3)",
+                            "States": {
+                              "Wait (3)": {
+                                "Type": "Wait",
+                                "Seconds": 5,
+                                "Next": "Layer 2: Extract and Save"
+                              },
+                              "Layer 2: Extract and Save": {
+                                "Type": "Task",
+                                "Resource": "arn:aws:states:::lambda:invoke",
+                                "OutputPath": "$.Payload",
+                                "Parameters": {
+                                  "Payload.$": "$",
+                                  "FunctionName": "arn:aws:lambda:us-east-1:013462464526:function:github_pipeline_extract_and_save:$LATEST"
+                                },
+                                "Retry": [
+                                  {
+                                    "ErrorEquals": [
+                                      "Lambda.ServiceException",
+                                      "Lambda.AWSLambdaException",
+                                      "Lambda.SdkClientException",
+                                      "Lambda.TooManyRequestsException"
+                                    ],
+                                    "IntervalSeconds": 1,
+                                    "MaxAttempts": 3,
+                                    "BackoffRate": 2
+                                  }
+                                ],
+                                "Next": "Layer 2: Check error"
+                              },
+                              "Layer 2: Check error": {
+                                "Type": "Choice",
+                                "Choices": [
+                                  {
+                                    "Or": [
+                                      {
+                                        "Variable": "$.extra.has_err",
+                                        "BooleanEquals": true
+                                      },
+                                      {
+                                        "Variable": "$.extra.children_num",
+                                        "NumericEquals": 0
+                                      }
+                                    ],
+                                    "Next": "Layer 2: Pass"
+                                  }
+                                ],
+                                "Default": "Layer 3: Map config"
+                              },
+                              "Layer 3: Map config": {
+                                "Type": "Map",
+                                "ItemProcessor": {
+                                  "ProcessorConfig": {
+                                    "Mode": "INLINE"
+                                  },
+                                  "StartAt": "Wait (4)",
+                                  "States": {
+                                    "Wait (4)": {
+                                      "Type": "Wait",
+                                      "Seconds": 5,
+                                      "Next": "Layer 3: Map parent"
+                                    },
+                                    "Layer 3: Map parent": {
+                                      "Type": "Map",
+                                      "ItemProcessor": {
+                                        "ProcessorConfig": {
+                                          "Mode": "INLINE"
+                                        },
+                                        "StartAt": "Wait (5)",
+                                        "States": {
+                                          "Wait (5)": {
+                                            "Type": "Wait",
+                                            "Seconds": 5,
+                                            "Next": "Layer 3: Extract and Save"
+                                          },
+                                          "Layer 3: Extract and Save": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::lambda:invoke",
+                                            "OutputPath": "$.Payload",
+                                            "Parameters": {
+                                              "Payload.$": "$",
+                                              "FunctionName": "arn:aws:lambda:us-east-1:013462464526:function:github_pipeline_extract_and_save:$LATEST"
+                                            },
+                                            "Retry": [
+                                              {
+                                                "ErrorEquals": [
+                                                  "Lambda.ServiceException",
+                                                  "Lambda.AWSLambdaException",
+                                                  "Lambda.SdkClientException",
+                                                  "Lambda.TooManyRequestsException"
+                                                ],
+                                                "IntervalSeconds": 1,
+                                                "MaxAttempts": 3,
+                                                "BackoffRate": 2
+                                              }
+                                            ],
+                                            "Next": "Layer 3: Check error"
+                                          },
+                                          "Layer 3: Check error": {
+                                            "Type": "Choice",
+                                            "Choices": [
+                                              {
+                                                "Or": [
+                                                  {
+                                                    "Variable": "$.extra.has_err",
+                                                    "BooleanEquals": true
+                                                  },
+                                                  {
+                                                    "Variable": "$.extra.children_num",
+                                                    "NumericEquals": 0
+                                                  }
+                                                ],
+                                                "Next": "Layer 3: Pass"
+                                              }
+                                            ],
+                                            "Default": "Layer 4: Map config"
+                                          },
+                                          "Layer 4: Map config": {
+                                            "Type": "Map",
+                                            "ItemProcessor": {
+                                              "ProcessorConfig": {
+                                                "Mode": "INLINE"
+                                              },
+                                              "StartAt": "Wait (6)",
+                                              "States": {
+                                                "Wait (6)": {
+                                                  "Type": "Wait",
+                                                  "Seconds": 5,
+                                                  "Next": "Layer 4: Map parent"
+                                                },
+                                                "Layer 4: Map parent": {
+                                                  "Type": "Map",
+                                                  "ItemProcessor": {
+                                                    "ProcessorConfig": {
+                                                      "Mode": "INLINE"
+                                                    },
+                                                    "StartAt": "Wait (7)",
+                                                    "States": {
+                                                      "Wait (7)": {
+                                                        "Type": "Wait",
+                                                        "Seconds": 5,
+                                                        "Next": "Layer 4: Extract and Save"
+                                                      },
+                                                      "Layer 4: Extract and Save": {
+                                                        "Type": "Task",
+                                                        "Resource": "arn:aws:states:::lambda:invoke",
+                                                        "OutputPath": "$.Payload",
+                                                        "Parameters": {
+                                                          "Payload.$": "$",
+                                                          "FunctionName": "arn:aws:lambda:us-east-1:013462464526:function:github_pipeline_extract_and_save:$LATEST"
+                                                        },
+                                                        "Retry": [
+                                                          {
+                                                            "ErrorEquals": [
+                                                              "Lambda.ServiceException",
+                                                              "Lambda.AWSLambdaException",
+                                                              "Lambda.SdkClientException",
+                                                              "Lambda.TooManyRequestsException"
+                                                            ],
+                                                            "IntervalSeconds": 1,
+                                                            "MaxAttempts": 3,
+                                                            "BackoffRate": 2
+                                                          }
+                                                        ],
+                                                        "Next": "Choice"
+                                                      },
+                                                      "Choice": {
+                                                        "Type": "Choice",
+                                                        "Choices": [
+                                                          {
+                                                            "Or": [
+                                                              {
+                                                                "Variable": "$.extra.has_err",
+                                                                "BooleanEquals": true
+                                                              },
+                                                              {
+                                                                "Variable": "$.extra.children_num",
+                                                                "NumericEquals": 0
+                                                              },
+                                                              {
+                                                                "Variable": "$.extra.count",
+                                                                "NumericGreaterThan": 5
+                                                              },
+                                                              {
+                                                                "Variable": "$.extra.has_next",
+                                                                "BooleanEquals": false
+                                                              }
+                                                            ],
+                                                            "Next": "Layer 4: Pass"
+                                                          }
+                                                        ],
+                                                        "Default": "Layer 4: Extract and Save"
+                                                      },
+                                                      "Layer 4: Pass": {
+                                                        "Type": "Pass",
+                                                        "End": true,
+                                                        "Result": {
+                                                          "pass": "ok"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "End": true,
+                                                  "ItemsPath": "$.children",
+                                                  "ItemSelector": {
+                                                    "ancient.$": "$.ancient",
+                                                    "parent.$": "$$.Map.Item.Value",
+                                                    "extract.$": "$.extract"
+                                                  },
+                                                  "MaxConcurrency": 1
+                                                }
+                                              }
+                                            },
+                                            "ResultPath": null,
+                                            "Next": "Layer 3: Check next info",
+                                            "ItemsPath": "$.extract.children",
+                                            "ItemSelector": {
+                                              "ancient.$": "$.ancient",
+                                              "extract.$": "$$.Map.Item.Value",
+                                              "children.$": "$.children"
+                                            },
+                                            "MaxConcurrency": 1
+                                          },
+                                          "Layer 3: Check next info": {
+                                            "Type": "Choice",
+                                            "Choices": [
+                                              {
+                                                "Or": [
+                                                  {
+                                                    "Variable": "$.extra.count",
+                                                    "NumericGreaterThan": 5
+                                                  },
+                                                  {
+                                                    "Variable": "$.extra.has_next",
+                                                    "BooleanEquals": false
+                                                  }
+                                                ],
+                                                "Next": "Layer 3: Pass"
+                                              }
+                                            ],
+                                            "Default": "Layer 3: Extract and Save"
+                                          },
+                                          "Layer 3: Pass": {
+                                            "Type": "Pass",
+                                            "End": true,
+                                            "Result": {
+                                              "pass": "ok"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "End": true,
+                                      "ItemsPath": "$.children",
+                                      "ItemSelector": {
+                                        "ancient.$": "$.ancient",
+                                        "parent.$": "$$.Map.Item.Value",
+                                        "extract.$": "$.extract"
+                                      },
+                                      "MaxConcurrency": 1
+                                    }
+                                  }
+                                },
+                                "ResultPath": null,
+                                "Next": "Layer 2: Check next info",
+                                "ItemsPath": "$.extract.children",
+                                "ItemSelector": {
+                                  "ancient.$": "$.ancient",
+                                  "extract.$": "$$.Map.Item.Value",
+                                  "children.$": "$.children"
+                                },
+                                "MaxConcurrency": 1
+                              },
+                              "Layer 2: Check next info": {
+                                "Type": "Choice",
+                                "Choices": [
+                                  {
+                                    "Or": [
+                                      {
+                                        "Variable": "$.extra.count",
+                                        "NumericGreaterThan": 5
+                                      },
+                                      {
+                                        "Variable": "$.extra.has_next",
+                                        "BooleanEquals": false
+                                      }
+                                    ],
+                                    "Next": "Layer 2: Pass"
+                                  }
+                                ],
+                                "Default": "Layer 2: Extract and Save"
+                              },
+                              "Layer 2: Pass": {
+                                "Type": "Pass",
+                                "End": true,
+                                "Result": {
+                                  "pass": "ok"
+                                }
+                              }
+                            }
+                          },
+                          "End": true,
+                          "ItemsPath": "$.children",
+                          "ItemSelector": {
+                            "ancient.$": "$.ancient",
+                            "parent.$": "$$.Map.Item.Value",
+                            "extract.$": "$.extract"
+                          },
+                          "MaxConcurrency": 1
+                        }
+                      }
+                    },
+                    "ResultPath": null,
+                    "Next": "Layer 1: Check next info",
+                    "ItemsPath": "$.extract.children",
+                    "ItemSelector": {
+                      "ancient.$": "$.ancient",
+                      "extract.$": "$$.Map.Item.Value",
+                      "children.$": "$.children"
+                    },
+                    "MaxConcurrency": 1
+                  },
+                  "Layer 1: Check next info": {
+                    "Type": "Choice",
+                    "Choices": [
+                      {
+                        "Or": [
+                          {
+                            "Variable": "$.extra.count",
+                            "NumericGreaterThan": 5
+                          },
+                          {
+                            "Variable": "$.extra.has_next",
+                            "BooleanEquals": false
+                          }
+                        ],
+                        "Next": "Layer 1: Pass"
+                      }
+                    ],
+                    "Default": "Layer 1: Extract and Save"
+                  },
+                  "Layer 1: Pass": {
+                    "Type": "Pass",
+                    "End": true,
+                    "Result": {
+                      "pass": "ok"
+                    }
+                  }
+                }
+              },
+              "End": true,
+              "ItemsPath": "$.parent",
+              "ItemSelector": {
+                "parent.$": "$$.Map.Item.Value",
+                "extract.$": "$.extract"
+              },
+              "MaxConcurrency": 1
+            }
+          }
+        },
+        "End": true,
+        "ItemsPath": "$.extract",
+        "ItemSelector": {
+          "extract.$": "$$.Map.Item.Value",
+          "parent.$": "$.parent"
+        },
+        "ResultPath": null
+      }
+    }
+  }

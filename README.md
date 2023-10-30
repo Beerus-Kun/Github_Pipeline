@@ -1,8 +1,11 @@
 ### **Building a pipeline to get Github data by GraphQL and delivery them to S3 by Step Function in AWS**:
 
-**Overview about Github GraphQL**
-- Define Gihub infomation needed and calculate running frequencies of lambda and measure resources (quotas) used per hour
-- The detail [file](needed properties.xlsx)
+**Step Function**
+- Config of Step Function [file](step-function.json)
+
+<p align="center">
+  <img src="images/stepfunctions_graph.png" width="350"/>
+</p>
 
 
 **DynamoDB**
@@ -14,27 +17,76 @@
 
 
 **Lambda**
-- Get organization names from DynamoDB [file](fetch_github_configuration.py)
-- Get data from github and save them to S3 [file](save_configuration.py)
-- Save the ids of organization to DynamoDB [file](save_configuration.py)
-
-
-**Step Function**
-
-<p align="center">
-  <img src="images/stepfunctions_graph.png" width="350"/>
-</p>
-
+- Get organization names and repository cursors from DynamoDB [file](fetch_github_configuration.py)
+- Get data from github and save them to S3 [file](extract_and_save.py)
+- Sort object need to get data [file](configs/data_extraction.json) to transform a dict that has children in parent [file](configs/transformed_configurate.json). [file](configure_batch.py) code
 
 **S3**
+- The data has 6 tables (6 objects: organization, repository, pull request, banch, commit, language)
+
+- Organization table
+  + id 
+  + email
+  + name
+  + createdAt
+  + announcement
+  + description
+  + websiteUrl
+  + location
+  + url
+
+- Repository table
+  + id 
+  + name
+  + createdAt
+  + description
+  + url
+  + organization_id
+
+- Pull_request table
+  + id
+  + viewerSubscription
+  + createdAt
+  + body
+  + repository_id
+
+- Banch table
+  + id
+  + name
+  + repository_id
+
+- Language table
+  + id
+  + name
+  + color
+  + repository_id
+
+- Commit table
+  + id
+  + message
+  + name
+  + message
+  + branch_id
+
+
+<p align="center">
+  <img src="images/objects.png" width="350"/>
+</p>
 
 <p align="center">
   <img src="images/s3.png" width="350"/>
 </p>
 
+<p align="center">
+  <img src="images/s3_1.png" width="350"/>
+</p>
+
+<p align="center">
+  <img src="images/s3_2.png" width="350"/>
+</p>
+
+
 
 **Comming up**
-- Change the pipeline to get more information
-- The properties of organization in github being saved to [file](data_extraction_config.json), then that file is transformed to [file](transformed_configurate.json) by [file](configure_batch.py)
-- Connect S3 to Snowflake 
+- Connect S3 to Snowflake and load data to Snowflake
 

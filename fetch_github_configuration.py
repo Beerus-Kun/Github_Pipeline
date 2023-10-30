@@ -13,11 +13,9 @@ def fetch_cursor():
 
     res = []
     for org, cur in response['Item']['value'].items():
-        res.append({"org": org, "cur":cur})
+        res.append({"organization": org, "repository_cursor":cur})
     return res
 
 def lambda_handler(event, context):
-    org_info = fetch_cursor()
-    return {
-        'org_info' : org_info
-    }
+    event['ancient'] = fetch_cursor()
+    return event

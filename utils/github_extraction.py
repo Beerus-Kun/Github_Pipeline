@@ -75,7 +75,7 @@ def extract_branch(repository_id:str, branch_cursor = ""):
     query = constant.BRANCH_QUERY
     branch_cursor = handle_cursor(branch_cursor)
     body = query.replace("__repository_id__", repository_id)
-    body = query.replace("__branch_cursor__", branch_cursor)
+    body = body.replace("__branch_cursor__", branch_cursor)
     try:
         response = requests.post(url, json={"query": body}, headers=headers)
         data = json.loads(response.content)
@@ -97,4 +97,4 @@ def extract_commit(repository_id:str, branch_cursor="", commit_cursor=""):
         return True, data['data']['node']['refs']['nodes'][-1]['target']['history']
     except Exception as e:
         print(e)
-        return [False]
+        return [False,1]

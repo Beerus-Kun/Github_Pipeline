@@ -1,60 +1,89 @@
 [
-    {
-      "object": "organization",
-      "config": {
-        "type": "hierarchy_snapshot",
-        "parent": null,
-        "interval": 5,
-        "key": "id"
-      },
-      "time_window": {
-        "from": "2023-09-19 18:05:00",
-        "to": "2023-09-19 18:10:00"
-      },
-      "children": [
-        {
-          "object": "repository",
-          "config": {
-            "type": "hierarchy_snapshot",
-            "parent": "organization",
-            "interval": 5,
-            "key": "id"
-          },
-          "time_window": {
-            "from": "2023-09-19 18:05:00",
-            "to": "2023-09-19 18:10:00"
-          },
-          "children": [
-            {
-              "object": "pullRequest",
-              "config": {
-                "type": "hierarchy_snapshot",
-                "parent": "repository",
-                "interval": 5,
-                "key": "id"
-              },
-              "time_window": {
-                "from": "2023-09-19 18:05:00",
-                "to": "2023-09-19 18:10:00"
-              },
-              "children": []
+  {
+    "object": "organization",
+    "config": {
+      "type": "hierarchy_snapshot",
+      "parent": null,
+      "interval": 5,
+      "key": "id"
+    },
+    "time_window": {
+      "from": "2023-10-18 22:45:00",
+      "to": "2023-10-18 22:50:00"
+    },
+    "children": [
+      {
+        "object": "repository",
+        "config": {
+          "type": "hierarchy_snapshot",
+          "parent": "organization",
+          "interval": 5,
+          "key": "id"
+        },
+        "time_window": {
+          "from": "2023-10-18 22:45:00",
+          "to": "2023-10-18 22:50:00"
+        },
+        "children": [
+          {
+            "object": "pullRequest",
+            "config": {
+              "type": "hierarchy_snapshot",
+              "parent": "repository",
+              "interval": 5,
+              "key": "id"
             },
-            {
-              "object": "language",
-              "config": {
-                "type": "hierarchy_snapshot",
-                "parent": "repository",
-                "interval": 5,
-                "key": "id"
-              },
-              "time_window": {
-                "from": "2023-09-19 18:05:00",
-                "to": "2023-09-19 18:10:00"
-              },
-              "children": []
-            }
-          ]
-        }
-      ]
-    }
-  ]
+            "time_window": {
+              "from": "2023-10-18 22:45:00",
+              "to": "2023-10-18 22:50:00"
+            },
+            "children": []
+          },
+          {
+            "object": "language",
+            "config": {
+              "type": "hierarchy_snapshot",
+              "parent": "repository",
+              "interval": 5,
+              "key": "id"
+            },
+            "time_window": {
+              "from": "2023-10-18 22:45:00",
+              "to": "2023-10-18 22:50:00"
+            },
+            "children": []
+          },
+          {
+            "object": "branch",
+            "config": {
+              "type": "hierarchy_snapshot",
+              "parent": "repository",
+              "interval": 5,
+              "key": "id"
+            },
+            "time_window": {
+              "from": "2023-10-18 22:45:00",
+              "to": "2023-10-18 22:50:00"
+            },
+            "children": [
+              {
+                "object": "commit",
+                "config": {
+                  "type": "hierarchy_snapshot",
+                  "parent": "branch",
+                  "interval": 5,
+                  "key": "id"
+                },
+                "time_window": {
+                  "from": "2023-10-18 22:45:00",
+                  "to": "2023-10-18 22:50:00"
+                },
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
